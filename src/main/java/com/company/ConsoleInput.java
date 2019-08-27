@@ -28,6 +28,12 @@ public class ConsoleInput {
 
     }
 
+    /**
+     * Checking what command enter user
+     *
+     * @param code - <code>{@link com.company.Constants.COMMAND}</code>
+     * @return - boolean
+     */
     public boolean is(String code) {
         return params[0].toLowerCase().startsWith(code.toLowerCase());
     }
@@ -73,16 +79,15 @@ public class ConsoleInput {
     public LocalDate getDate() throws DateTimeParseException {
         String strDate = null;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
+        // if command was get report, than date will be at diff index
         if (is(Constants.COMMAND.SALES_REPORT) && params.length > REPORT_DATE.index) {
             strDate = params[REPORT_DATE.index];
-
+            // get date at default index
         } else if (params.length > DATE.index) {
             strDate = params[DATE.index];
         }
 
         return strDate != null ? LocalDate.parse(strDate, formatter) : null;
     }
-
 
 }

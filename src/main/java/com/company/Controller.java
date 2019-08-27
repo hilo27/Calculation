@@ -83,7 +83,9 @@ public class Controller {
         return new Report(transactionList, input).getProfit();
     }
 
-
+    /**
+     * Add transaction in goods list
+     */
     private static void addTransaction(String name, Transaction transaction) {
         goods.get(name).add(transaction);
     }

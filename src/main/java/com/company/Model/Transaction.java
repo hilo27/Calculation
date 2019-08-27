@@ -9,11 +9,18 @@ public class Transaction {
     private BigDecimal price;
     private Integer amount;
     private LocalDate date;
+    private BigDecimal total = null;
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
 
     public Transaction(Integer amount, BigDecimal price, LocalDate date) {
         this.amount = amount;
         this.price = price;
         this.date = date;
+        total = price.multiply(BigDecimal.valueOf(amount));
     }
 
     public BigDecimal getPrice() {

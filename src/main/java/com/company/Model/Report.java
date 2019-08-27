@@ -4,16 +4,17 @@ package com.company.Model;
 import com.company.ConsoleInput;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class Report {
-    ConsoleInput input = null;
+    private ConsoleInput input = null;
     Transaction transaction = null;
-    List<Transaction> originalTransactionList = null;
-    List<Transaction> filteredByDateList = null;
+    private List<Transaction> originalTransactionList = null;
+    private List<Transaction> filteredByDateList = null;
 
     public Report(List<Transaction> list, ConsoleInput consoleInput) {
         if (!list.isEmpty() && StringUtils.isNotBlank(consoleInput.getUserInput())) {
@@ -28,20 +29,44 @@ public class Report {
         }
     }
 
-
+    /**
+     * @return - profit report
+     */
     public String getProfit() {
-        AtomicReference<Integer> totalSalesAmount = new AtomicReference<>(0);
-
-        
+        // this is calculated total amount of purchase transactions
+        AtomicReference<Integer> totalAmount = new AtomicReference<>(0);
+        // this is calculated total price of purchase transactions
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        // it is value represented total price of sales, i know, name could be better.
+        AtomicReference<BigDecimal> totalSalesPrice = new AtomicReference<>(BigDecimal.ZERO);
 
         // calculate total sales amount
         filteredByDateList.forEach(transaction -> {
             if (transaction instanceof Sale) {
-                totalSalesAmount.updateAndGet(v -> v + transaction.getAmount());
+                totalAmount.updateAndGet(v -> v + transaction.getAmount());
+                totalSalesPrice.updateAndGet(v -> v.add(transaction.getTotal()));
             }
         });
+        // temporary value, used for calculating totalPrice
+        AtomicReference<Integer> tempTotalAmount = new AtomicReference<>(totalAmount.get());
 
+        // calculating total price
+        for (Transaction transaction : filteredByDateList) {
+            if (transaction instanceof Purchase) {
+                if (transaction.getAmount() > tempTotalAmount.get()) {
+                    // if total amount left is lower than transaction amount
+                    totalPrice = totalPrice.add(transaction.getPrice().multiply(new BigDecimal(tempTotalAmount.get())));
+                    tempTotalAmount.set(0);
+                    break;
 
-        return "dummy";
+                } else {
+                    // if total amount higher than transaction amount
+                    totalPrice = totalPrice.add(transaction.getTotal());
+                    tempTotalAmount.updateAndGet(v -> v - transaction.getAmount());
+                }
+            }
+        }
+
+        return String.valueOf(totalSalesPrice.get().subtract(totalPrice));
     }
 }
