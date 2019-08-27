@@ -80,7 +80,7 @@ public class Controller {
      */
     public static String salesReport(ConsoleInput input) {
         List<Transaction> transactionList = goods.get(input.getName());
-        return new Report(transactionList, input).getProfit();
+        return new Report(transactionList, input).calculateProfit();
     }
 
     /**

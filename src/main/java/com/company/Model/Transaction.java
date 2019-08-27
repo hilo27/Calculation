@@ -4,6 +4,9 @@ package com.company.Model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * Base transaction class
+ */
 @SuppressWarnings("WeakerAccess")
 public class Transaction {
     private BigDecimal price;

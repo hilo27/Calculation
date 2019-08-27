@@ -4,6 +4,9 @@ package com.company.Model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * This class represent Sales
+ */
 @SuppressWarnings("WeakerAccess")
 public class Sale extends Transaction {
 
