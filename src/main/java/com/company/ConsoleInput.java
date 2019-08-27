@@ -55,7 +55,7 @@ public class ConsoleInput {
     @Nullable
     public Integer getAmount() {
         if (params.length > AMOUNT.index && NumberUtils.isDigits(params[AMOUNT.index])) {
-            return new Integer(params[AMOUNT.index]);
+            return Integer.valueOf(params[AMOUNT.index]);
         }
         return null;
     }
