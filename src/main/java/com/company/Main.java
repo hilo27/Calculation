@@ -3,12 +3,11 @@ package com.company;
 import java.util.Scanner;
 
 import static com.company.Constants.*;
-import static com.company.Controller.*;
 
 public class Main {
 
     public static void main(String[] args) {
-
+        Controller controller = new Controller();
         Scanner scanner = new Scanner(System.in);
         ConsoleInput input = new ConsoleInput();
 
@@ -21,16 +20,16 @@ public class Main {
             input.setUserInput(scanner.nextLine());
 
             if (input.is(COMMAND.NEW_PRODUCT)) {
-                System.out.println(addProduct(input));
+                System.out.println(controller.addProduct(input));
 
             } else if (input.is(COMMAND.PURCHASE)) {
-                System.out.println(purchaseProduct(input));
+                System.out.println(controller.purchaseProduct(input));
 
             } else if (input.is(COMMAND.SALE)) {
-                System.out.println(saleProduct(input));
+                System.out.println(controller.saleProduct(input));
 
             } else if (input.is(COMMAND.SALES_REPORT)) {
-                System.out.println(salesReport(input));
+                System.out.println(controller.salesReport(input));
 
             } else if (input.is(HELP)) {
                 System.out.println(TEXT.HELP);
@@ -44,7 +43,6 @@ public class Main {
             } else {
                 System.out.println(UNKNOWN);
             }
-
         }
 
         scanner.close();

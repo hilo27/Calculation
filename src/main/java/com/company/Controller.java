@@ -5,8 +5,8 @@ import com.company.Model.Purchase;
 import com.company.Model.Report;
 import com.company.Model.Sale;
 import com.company.Model.Transaction;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +26,7 @@ public class Controller {
      *
      * @return - if product name nat specified or goods already exists then <code>{@link RESULT#ERROR}</code>
      */
-    public static String addProduct(ConsoleInput input) {
+    public String addProduct(ConsoleInput input) {
         if (input.getName() == null || isProductExists(input)) {
             return RESULT.ERROR;
         }
@@ -40,14 +40,14 @@ public class Controller {
      *
      * @return - <code>{@link RESULT#OK}</code> or <code>{@link RESULT#ERROR}</code>
      */
-    public static String purchaseProduct(ConsoleInput input) {
+    public String purchaseProduct(ConsoleInput input) {
         try {
-            if (allowPurchase(input)) {
+            if (isConditionCorrect(input)) {
                 addTransaction(input.getName(), new Purchase(input.getAmount(), input.getPrice(), input.getDate()));
                 return RESULT.OK;
             }
 
-        } catch (DateTimeParseException ex) {
+        } catch (Exception ex) {
             return RESULT.ERROR + ": " + ex.getMessage();
         }
 
@@ -59,14 +59,14 @@ public class Controller {
      *
      * @return - <code>{@link RESULT#OK}</code> or <code>{@link RESULT#ERROR}</code>
      */
-    public static String saleProduct(ConsoleInput input) {
+    public String saleProduct(ConsoleInput input) {
         try {
-            if (allowSale(input)) {
+            if (isAllowSale(input)) {
                 addTransaction(input.getName(), new Sale(input.getAmount(), input.getPrice(), input.getDate()));
                 return RESULT.OK;
             }
 
-        } catch (DateTimeParseException ex) {
+        } catch (Exception ex) {
             return RESULT.ERROR + ": " + ex.getMessage();
         }
 
@@ -78,36 +78,54 @@ public class Controller {
      *
      * @return - <code>{@link RESULT#OK}</code> or <code>{@link RESULT#ERROR}</code>
      */
-    public static String salesReport(ConsoleInput input) {
-        List<Transaction> transactionList = goods.get(input.getName());
-        return new Report(transactionList, input).calculateProfit();
+    public String salesReport(ConsoleInput input) {
+        try {
+            List<Transaction> transactionList = goods.get(input.getName());
+            return new Report(transactionList, input).calculateProfit();
+
+        } catch (Exception ex) {
+            return RESULT.ERROR + ": " + ex.getMessage();
+        }
     }
 
     /**
-     * Add transaction in goods list
+     * Add transaction in
+     * oods list
      */
     private static void addTransaction(String name, Transaction transaction) {
         goods.get(name).add(transaction);
     }
 
     /**
-     * Checking if allow to sale
+     * Checking if allowed to sale
      */
-    private static boolean allowSale(ConsoleInput input) {
-        return isProductExists(input); // TODO (Руслан): учитывать дату
+    private boolean isAllowSale(ConsoleInput input) {
+        boolean isAllow = false;
+        // checking basic start condition
+        if (isConditionCorrect(input)) {
+            // get transaction list
+            List<Transaction> list = goods.get(input.getName());
+            // if list not empty and first element is Purchase
+            // its needed because we can`t sale product if it's not purchased
+            if (CollectionUtils.isNotEmpty(list) && list.get(0) instanceof Purchase) {
+                isAllow = true;
+            }
+        }
+        return isAllow;
     }
 
     /**
      * Checking if condition are allow purchase
      */
-    private static boolean allowPurchase(ConsoleInput input) {
-        return isProductExists(input) && input.getPrice() != null;
+    private boolean isConditionCorrect(ConsoleInput input) {
+        // price and amount will be null if < 0
+        return isProductExists(input) && input.getPrice() != null && input.getAmount() != null;
     }
 
     /**
      * Check if user specified product name and it is exists in goods map
      */
-    private static boolean isProductExists(ConsoleInput input) {
+    private boolean isProductExists(ConsoleInput input) {
         return goods.get(input.getName()) != null;
     }
 
