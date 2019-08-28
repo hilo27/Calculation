@@ -2,7 +2,7 @@ package com.company;
 // Created by Руслан on 27.08.2019.
 
 /**
- * Класс описывающий константы используемые в программе
+ * This is class that describe constant values that using by program
  */
 public interface Constants {
     enum Codes {
